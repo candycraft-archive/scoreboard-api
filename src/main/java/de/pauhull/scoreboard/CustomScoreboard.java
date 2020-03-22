@@ -1,7 +1,5 @@
 package de.pauhull.scoreboard;
 
-import de.pauhull.friends.common.party.Party;
-import de.pauhull.friends.spigot.SpigotFriends;
 import lombok.Getter;
 import net.mcstats2.bridge.server.bukkit.MCPerms;
 import net.mcstats2.permissions.manager.data.MCSGroupData;
@@ -94,43 +92,33 @@ public abstract class CustomScoreboard {
                 team.addEntry(player.getName());
             });
         } else {
-            SpigotFriends.getInstance().getPartyManager().getAllParties(parties -> {
-                Bukkit.getScheduler().runTask(ScoreboardManager.getInstance().getPlugin(), () -> {
-                    String prefix, suffix, rank;
-                    if (player.getDisplayName().equals(player.getName())) {
-                        MCSGroupData group = MCPerms.getInstance().getManager().getHighestGroup(player.getUniqueId());
-                        rank = group.tagID + "";
-                        prefix = group.prefix;
-                        suffix = group.suffix;
-                    } else {
-                        rank = "65";
-                        prefix = "§7";
-                        suffix = "§7";
-                    }
+            String prefix, suffix, rank;
+            if (player.getDisplayName().equals(player.getName())) {
+                MCSGroupData group = MCPerms.getInstance().getManager().getHighestGroup(player.getUniqueId());
+                rank = group.tagID + "";
+                prefix = group.prefix;
+                suffix = group.suffix;
+            } else {
+                rank = "65";
+                prefix = "§7";
+                suffix = "§7";
+            }
 
-                    for (Party party : parties) {
-                        if (party.getMembers().contains(player.getDisplayName()) && party.getMembers().contains(this.player.getDisplayName())) {
-                            suffix += "§7 [§5Party§7]";
-                        }
-                    }
+            String teamName = rank + player.getName();
 
-                    String teamName = rank + player.getName();
+            if (teamName.length() > 16) {
+                teamName = teamName.substring(0, 16);
+            }
 
-                    if (teamName.length() > 16) {
-                        teamName = teamName.substring(0, 16);
-                    }
+            if (scoreboard.getTeam(teamName) != null) {
+                scoreboard.getTeam(teamName).unregister();
+            }
 
-                    if (scoreboard.getTeam(teamName) != null) {
-                        scoreboard.getTeam(teamName).unregister();
-                    }
+            Team team = scoreboard.registerNewTeam(teamName);
+            team.setPrefix(ChatColor.translateAlternateColorCodes('&', prefix));
+            team.setSuffix(ChatColor.translateAlternateColorCodes('&', suffix));
 
-                    Team team = scoreboard.registerNewTeam(teamName);
-                    team.setPrefix(ChatColor.translateAlternateColorCodes('&', prefix));
-                    team.setSuffix(ChatColor.translateAlternateColorCodes('&', suffix));
-
-                    team.addEntry(player.getName());
-                });
-            });
+            team.addEntry(player.getName());
         }
 
     }
