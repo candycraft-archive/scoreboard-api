@@ -16,6 +16,13 @@
     </repositories>
 
     <dependencies>
+        
+        <dependency>
+            <groupId>net.mcstats2</groupId>
+            <artifactId>MCStatsCORE2</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>net.mcstats2</groupId>
